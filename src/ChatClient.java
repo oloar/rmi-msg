@@ -1,9 +1,9 @@
 import java.rmi.*;
 import java.rmi.registry.*;
 
-public class HelloClient {
+public class ChatClient {
   public static void main(String [] args) {
-	
+
 	try {
 	  if (args.length < 1) {
 	   System.out.println("Usage: java HelloClient <rmiregistry host>");
@@ -12,7 +12,7 @@ public class HelloClient {
 	String host = args[0];
 
 	// Get remote object reference
-	Registry registry = LocateRegistry.getRegistry(host); 
+	Registry registry = LocateRegistry.getRegistry(host);
 	Hello h = (Hello) registry.lookup("HelloService");
 
 	// Remote method invocation
