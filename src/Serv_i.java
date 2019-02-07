@@ -4,21 +4,19 @@ import java.util.ArrayList;
 
 public class Serv_i implements Serv {
 	private int id;
-	private Registry reg;
-	private ArrayList<Integer> clients;
+	private ArrayList<Client> clients;
 
-	public Serv_i(Registry reg) {
+	public Serv_i() {
 		id = 0;
-		this.reg = reg;
 		clients = new ArrayList<>();
 	}
 
-	public int clientRegister() throws RemoteException {
+	public int clientRegister(Client c) throws RemoteException {
 		int cId;
 
 		id++; // min id = 1
 		cId = id;
-		clients.add(cId);
+		clients.add(c);
 		return cId;
 	}
 
@@ -44,7 +42,7 @@ public class Serv_i implements Serv {
 		for (int cId : clients) {
 			if (cId != m.senderId()) {
 				c = getClientService(cId);
-				c.receiveMsg(m);
+				c.recvMsg(m);
 			}
 		}
 
