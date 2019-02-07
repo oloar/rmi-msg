@@ -1,23 +1,30 @@
 import java.rmi.*;
 import java.rmi.registry.*;
+import java.rmi.server.*;
 
 public class ClientImplem implements Client{
 
     private int id;
     private String pseudo;
     private Serv s;
+    private boolean connected;
 
     public ClientImplem(String pseudo){
         this.pseudo = pseudo;
+        this.connected = false;
     }
 
     private void register(){
         System.out.print("Register to server...");
         try{
-            this.setId(this.s.clientRegister(this));
+            Client c = (Client) UnicastRemoteObject.exportObject(this,0);
+            this.setId(this.s.clientRegister(c));
         }catch(Exception e){
             System.err.println("Error while registering client");
+            System.err.println(e.getMessage());
+            e.printStackTrace();
         }
+        this.connected = true;
         System.out.println("Done.");
     }
 
@@ -30,6 +37,8 @@ public class ClientImplem implements Client{
             this.s = (Serv) registry.lookup("ChatService");
         }catch(Exception e){
             System.err.println("Error while connecting client");
+            System.err.println(e.getMessage());
+            e.printStackTrace();
         }
         System.out.println("Done.");
         this.register();
@@ -43,6 +52,8 @@ public class ClientImplem implements Client{
                 this.s.sendMsgToServ(m);
             }catch(Exception e){
                 System.err.println("Error while sending message to server");
+                System.err.println(e.getMessage());
+                e.printStackTrace();
             }
         }else{
             // TODO : gérer l'historique
@@ -66,6 +77,7 @@ public class ClientImplem implements Client{
     public void leaveChat(){
         // TODO complete ?
         System.out.println("Leaving chat...");
+        this.connected = false;
         //this.s.clientLeave();
     }
 
@@ -83,6 +95,10 @@ public class ClientImplem implements Client{
 
     public void setPseudo(String pseudo){
         this.pseudo = pseudo;
+    }
+
+    public boolean isConnected(){
+        return this.connected;
     }
 
 }

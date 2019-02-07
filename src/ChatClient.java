@@ -1,3 +1,4 @@
+import java.util.Scanner;
 
 public class ChatClient{
 
@@ -12,6 +13,13 @@ public class ChatClient{
 
             ClientImplem client = new ClientImplem("Tester");
             client.connect(host);
+
+            Scanner sc = new Scanner(System.in);
+
+            while(client.isConnected()){
+                String entry = sc.nextLine();
+                client.sendMessageToServer(entry);
+            }
 
 
 		} catch (Exception e)  {

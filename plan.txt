@@ -1,1 +1,0 @@
-A la connexion, le client demande un id au serv et le serveur envoi un identifiant au client.
