@@ -1,7 +1,6 @@
-import java.rmi.*;
-import java.rmi.registry.*;
 
-public class ChatClient {
+public class ChatClient{
+
 	public static void main(String [] args) {
 
 		try {
@@ -11,13 +10,9 @@ public class ChatClient {
 
 			String host = args[0];
 
-			// Get remote object reference
-			Registry registry = LocateRegistry.getRegistry(host);
-			Hello h = (Hello) registry.lookup("HelloService");
+            ClientImplem client = new Client("Tester");
+            client.connect(host);
 
-			// Remote method invocation
-			String res = h.sayHello();
-			System.out.println(res);
 
 		} catch (Exception e)  {
 			System.err.println("Error on client: " + e);

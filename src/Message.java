@@ -20,4 +20,9 @@ public class Message {
 	public int senderId(){
 		return this.senderId;
 	}
+
+	public String toString(){
+		return this.sender+": "+this.text;
+	}
+
 }
