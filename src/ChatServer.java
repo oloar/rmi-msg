@@ -9,7 +9,7 @@ public class ChatServer {
 			// Create a Hello remote object
 			Registry registry= LocateRegistry.getRegistry();
 
-			Serv_i s = new Serv_i();
+			ServImplem s = new ServImplem();
 			Serv s_stub = (Serv) UnicastRemoteObject.exportObject(s, 0);
 
 			// Register the remote object in RMI registry with a given identifier

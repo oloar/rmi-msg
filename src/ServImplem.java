@@ -2,11 +2,11 @@ import java.rmi.*;
 import java.rmi.registry.*;
 import java.util.ArrayList;
 
-public class Serv_i implements Serv {
+public class ServImplem implements Serv {
 	private int id;
-	private ArrayList<Client> clients;
+	private ArrayList<Client> clients; // HashMap ?
 
-	public Serv_i() {
+	public ServImplem() {
 		id = 0;
 		clients = new ArrayList<>();
 	}
@@ -25,24 +25,14 @@ public class Serv_i implements Serv {
 		// TODO : writeToHistory(m);
 	}
 
-	private Client getClientService(int cId) {
-		Client c;
-		try {
-			c = reg.lookup(cId + "Service");
-		} catch (NotBoundException e) {
-			// TODO : Logger
-			System.err.println("[E]: Service not bound in current registry for client " + cId +".");
-			return null;
-		}
-		return c;
-	}
-
 	private void sendToClients(Message m) {
-		Client c;
-		for (int cId : clients) {
-			if (cId != m.senderId()) {
-				c = getClientService(cId);
+		for (Client c : clients) {
+			try {
+			if (c.getId() != m.senderId()) {
 				c.recvMsg(m);
+			}
+			} catch (RemoteException e) {
+				System.err.println("[E]: Could not send to client");
 			}
 		}
 
