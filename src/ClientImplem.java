@@ -13,7 +13,7 @@ public class ClientImplem implements Client{
 
     private void register(){
         System.out.print("Register to server...");
-        this.setId(this.s.clientRegister());
+        this.setId(this.s.clientRegister(this));
         System.out.println("Done.");
     }
 
@@ -31,7 +31,7 @@ public class ClientImplem implements Client{
     public void sendMessageToServer(String message){
         if(message.charAt(0) != '/'){
             Message m = new Message(this.pseudo, this.id, message);
-            this.s.sendMessageToServer(m);
+            this.s.sendMsgToServ(m);
         }else{
             // TODO : gérer l'historique
             switch(message){
@@ -47,14 +47,14 @@ public class ClientImplem implements Client{
         }
     }
 
-    @Override
     public void recvMsg(Message message) throws RemoteException{
         System.out.println(message.toString());
     }
 
     public void leaveChat(){
         // TODO complete ?
-        this.s.clientLeave();
+        System.out.println("Leaving chat...");
+        //this.s.clientLeave();
     }
 
     public int getId(){
