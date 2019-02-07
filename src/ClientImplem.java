@@ -13,7 +13,11 @@ public class ClientImplem implements Client{
 
     private void register(){
         System.out.print("Register to server...");
-        this.setId(this.s.clientRegister(this));
+        try{
+            this.setId(this.s.clientRegister(this));
+        }catch(Exception e){
+            System.err.println("Error while registering client");
+        }
         System.out.println("Done.");
     }
 
@@ -21,8 +25,12 @@ public class ClientImplem implements Client{
 
         // Get remote object reference
         System.out.print("Connection to server...");
-        Registry registry = LocateRegistry.getRegistry(host);
-        this.s = (Serv) registry.lookup("ChatService");
+        try{
+            Registry registry = LocateRegistry.getRegistry(host);
+            this.s = (Serv) registry.lookup("ChatService");
+        }catch(Exception e){
+            System.err.println("Error while connecting client");
+        }
         System.out.println("Done.");
         this.register();
 
@@ -31,7 +39,11 @@ public class ClientImplem implements Client{
     public void sendMessageToServer(String message){
         if(message.charAt(0) != '/'){
             Message m = new Message(this.pseudo, this.id, message);
-            this.s.sendMsgToServ(m);
+            try{
+                this.s.sendMsgToServ(m);
+            }catch(Exception e){
+                System.err.println("Error while sending message to server");
+            }
         }else{
             // TODO : gérer l'historique
             switch(message){

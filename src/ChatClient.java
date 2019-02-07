@@ -10,7 +10,7 @@ public class ChatClient{
 
 			String host = args[0];
 
-            ClientImplem client = new Client("Tester");
+            ClientImplem client = new ClientImplem("Tester");
             client.connect(host);
 
 
