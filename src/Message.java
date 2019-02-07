@@ -3,7 +3,7 @@ public class Message {
 	private int senderId;
 	private String text;
 
-	public Message(String senderId, String sender, String text) {
+	public Message(String sender, int senderId, String text) {
 		this.sender = sender;
 		this.senderId = senderId;
 		this.text = text;
