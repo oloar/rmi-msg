@@ -69,7 +69,7 @@ public class ClientImplem implements Client{
         //this.s.clientLeave();
     }
 
-    public int getId(){
+    public int getId() throws RemoteException {
         return this.id;
     }
 
