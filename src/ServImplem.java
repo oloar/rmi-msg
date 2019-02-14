@@ -1,3 +1,4 @@
+import java.io.*;
 import java.rmi.*;
 import java.rmi.registry.*;
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ public class ServImplem implements Serv {
 	 */
 	public void sendMsgToServ(Message m) throws RemoteException {
 		sendToClients(m);
-		// TODO : writeToHistory(m);
+		writeToHistory(m);
 	}
 
 	/**
@@ -52,6 +53,39 @@ public class ServImplem implements Serv {
 
 	}
 
+	/**
+	 * Construct an arraylist of messages from a file
+	 * @return The history in the form a an arraylist of message
+	 * @throws RemoteException
+	 */
+	public ArrayList<Message> getHistory() throws RemoteException {
+		ArrayList<Message> history = new ArrayList<>();
+		BufferedReader br;
+		String line;
+		try {
+			br = new BufferedReader(new FileReader("history.txt"));
+			line = br.readLine();
+			while(line != null) {
+				history.add(Message.fromCSV(line));
+				line = br.readLine();
+			}
+			br.close();
+		} catch (FileNotFoundException e) {
+			System.err.println("Err: History file not found.");
+		} catch (IOException e) {
+			System.err.println("Err: Could not load history.");
+			System.err.println(e.getMessage());
+		}
+		return history;
+	}
 
+	private void writeToHistory(Message m) {
+		try {
+			BufferedWriter br = new BufferedWriter(new FileWriter("history.txt", true));
+			br.write(m.toCSV());
+		} catch (IOException e) {
+			System.err.println("Err: Could not write history to file.");
+		}
+	}
 }
 

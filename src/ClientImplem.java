@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.rmi.*;
 import java.rmi.registry.*;
 import java.rmi.server.*;
@@ -59,6 +60,14 @@ public class ClientImplem implements Client{
             // TODO : gérer l'historique
             switch(message){
                 case "/history":
+                    try {
+                        ArrayList<Message> h = this.s.getHistory();
+                        for (Message m : h) {
+                            System.out.println(m);
+                        }
+                    } catch(RemoteException e) {
+                        System.err.println("Error while fetching history.");
+                    }
                     break;
                 case "/exit": case "/quit": case "/leave":
                     this.leaveChat();

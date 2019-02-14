@@ -23,6 +23,14 @@ public class Message implements Serializable {
 		return this.senderId;
 	}
 
+	public String toCSV() {
+		return this.sender + "," + this.senderId + "," + this.text;
+	}
+
+	public static Message fromCSV(String s) {
+		String[] splitted = s.split(",");
+		return new Message(splitted[0], Integer.parseInt(splitted[1]), splitted[2]);
+	}
 	public String toString(){
 		return this.sender+": "+this.text;
 	}
