@@ -22,7 +22,7 @@ public class ServImplem implements Serv {
 	 * @param c : client reference
 	 * @return : client id strictly greater than 0
 	 */
-	public int clientRegister(Client c, int roomId) throws RemoteException {
+	public int clientRegister(Client c) throws RemoteException {
 		int cId;
 
 		id++; // min id = 1
