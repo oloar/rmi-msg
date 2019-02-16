@@ -44,6 +44,7 @@ public class Message implements Serializable {
 		String[] splitted = s.split(",");
 		return new Message(splitted[0], Integer.parseInt(splitted[1]), Integer.parseInt(splitted[2]), splitted[3]);
 	}
+
 	public String toString(){
 		return this.sender+": "+this.text;
 	}

@@ -14,6 +14,9 @@ public class ServImplem implements Serv {
 		rooms.add(new Room(0));
 	}
 
+	/////////////////////////////////////////////////////////////////////////////////////
+	// CONNECTIONS
+	/////////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * Register a client to the server
 	 * @param c : client reference
@@ -29,55 +32,24 @@ public class ServImplem implements Serv {
 		return cId;
 	}
 
-	public void printRooms() throws RemoteException{
-		for(Room r : this.rooms){
-			System.out.println(r.getId()+ " : "+r.getNumberClients()+" clients connected.");
-		}
-	}
-
-	public void changeRoom(Client c, int newRoomId) throws RemoteException{
-		if(existingId(newRoomId)){
-			Objects.requireNonNull(getRoomById(getRoomOfClient(c))).leaveRoom(c);
-			Objects.requireNonNull(getRoomById(newRoomId)).joinRoom(c);
-		}
-	}
-
-	private Room getRoomById(int id){
-		for(Room r : this.rooms){
-			if(r.getId() == id)
-				return r;
-		}
-		return null;
-	}
-
-	public void newRoom(){
-		this.rooms.add(new Room(this.rooms.size()+1));
-	}
-
-	public ArrayList<Room> getRooms() throws RemoteException{
-		return this.rooms;
-	}
-
-	public boolean existingId(int id) throws RemoteException{
+	/**
+	 * Client leaves a room
+	 * @param c : Client
+	 */
+	public void clientLeave(Client c) throws RemoteException {
 		for(Room r : getRooms())
-			if(r.getId() == id)
-				return true;
-		return false;
-	}
-
-	public int getRoomOfClient(Client c) throws RemoteException{
-		for(Room r : this.rooms){
-			if(r.isInTheRoom(c)){
-				return r.getId();
+			if(r.isInTheRoom(c)) {
+				r.leaveRoom(c);
+				sendMsgToRoom(new Message("Server", 0, r.getId(), c.getPseudo() + " has left the channel."), r);
 			}
-		}
-		return -1;
 	}
 
+	/////////////////////////////////////////////////////////////////////////////////////
+	// MESSAGING
+	/////////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * Send message to server
 	 * @param m : message to send
-	 * @throws RemoteException
 	 */
 	public void sendMsgToServ(Message m) throws RemoteException {
 		System.out.println(m.sender() + " says " + m.text() + " in " + m.roomId());
@@ -86,7 +58,13 @@ public class ServImplem implements Serv {
 		writeToHistory(m);
 	}
 
-	public void sendMsgToRoom(Message m, Room room){
+
+	/**
+	 * Send message to everyone in the room
+	 * @param m : message to send
+	 * @param room : room to send it to
+	 */
+	private void sendMsgToRoom(Message m, Room room){
 		for(Client c : room.getClients()){
 			try{
 				if (c.getId() != m.senderId()) {
@@ -117,10 +95,25 @@ public class ServImplem implements Serv {
 		}
 	}
 
+	/////////////////////////////////////////////////////////////////////////////////////
+	// HISTORY
+	/////////////////////////////////////////////////////////////////////////////////////
+	private void writeToHistory(Message m) {
+		if (m.roomId() != 0) { // Only log clients message
+			try {
+				BufferedWriter br = new BufferedWriter(new FileWriter("history.txt", true));
+				br.write(m.toCSV());
+				br.close();
+			} catch (IOException e) {
+				System.err.println("Err: Could not write history to file.");
+				System.err.println(e.getMessage());
+			}
+		}
+	}
+
 	/**
 	 * Construct an arraylist of messages from a file
 	 * @return The history in the form a an arraylist of message
-	 * @throws RemoteException
 	 */
 	public ArrayList<Message> getHistory() throws RemoteException {
 		ArrayList<Message> history = new ArrayList<>();
@@ -143,23 +136,82 @@ public class ServImplem implements Serv {
 		return history;
 	}
 
-	private void writeToHistory(Message m) {
-		if (m.roomId() != 0) { // Only log clients message
-			try {
-				BufferedWriter br = new BufferedWriter(new FileWriter("history.txt", true));
-				br.write(m.toCSV());
-				br.close();
-			} catch (IOException e) {
-				System.err.println("Err: Could not write history to file.");
-				System.err.println(e.getMessage());
-			}
+	/////////////////////////////////////////////////////////////////////////////////////
+	// ROOMS
+	/////////////////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * Diplay rooms information
+	 */
+	public void printRooms() throws RemoteException{
+		for(Room r : this.rooms){
+			System.out.println(r.getId()+ " : "+r.getNumberClients()+" clients connected.");
 		}
 	}
 
-	public void clientLeave(Client c) throws RemoteException {
-		System.out.println("Removing clients.");
+	/**
+	 * Change a client from one room to another
+	 * @param c : client
+	 * @param newRoomId : the room to switch to
+	 */
+	public void changeRoom(Client c, int newRoomId) throws RemoteException{
+		if(existingId(newRoomId)){
+			Objects.requireNonNull(getRoomById(getRoomOfClient(c))).leaveRoom(c);
+			Objects.requireNonNull(getRoomById(newRoomId)).joinRoom(c);
+		}
+	}
+
+	/**
+	 * Get a room by its id
+	 * @param id : room's id
+	 * @return the room
+	 */
+	private Room getRoomById(int id){
+		for(Room r : this.rooms){
+			if(r.getId() == id)
+				return r;
+		}
+		return null;
+	}
+
+	/**
+	 * Initialize a new room and add it to the list
+	 */
+	public void newRoom(){
+		this.rooms.add(new Room(this.rooms.size()+1));
+	}
+
+	/**
+	 * Get the rooms list
+	 * @return ArrayList of Room
+	 */
+	public ArrayList<Room> getRooms() throws RemoteException{
+		return this.rooms;
+	}
+
+	/**
+	 * Check if an id exists
+	 * @param id : id to check
+	 * @return true if the id exist, false otherwise
+	 */
+	public boolean existingId(int id) throws RemoteException{
 		for(Room r : getRooms())
-			if(r.isInTheRoom(c))
-				r.leaveRoom(c);
+			if(r.getId() == id)
+				return true;
+		return false;
+	}
+
+	/**
+	 * Get client's room's id
+	 * @param c : client
+	 * @return id of the room the client is in.
+	 */
+	public int getRoomOfClient(Client c) throws RemoteException{
+		for(Room r : this.rooms){
+			if(r.isInTheRoom(c)){
+				return r.getId();
+			}
+		}
+		return -1;
 	}
 }
