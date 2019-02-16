@@ -8,12 +8,14 @@ Compilation :
 $ make
 
 Lancement d'un serveur :
+Depuis out/server
 - Lancer rmiregistry si besoin.
 $ rmiregistry
 - Puis lancer le serveur
 $ java ChatServer
 
 Lancement d'un client :
+Depuis out/client
 $ java ChatClient <rmi host>
 
 
