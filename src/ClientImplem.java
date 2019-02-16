@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.rmi.*;
 import java.rmi.registry.*;
 import java.rmi.server.*;
+import java.util.Scanner;
 
 public class ClientImplem implements Client{
 
@@ -17,10 +18,19 @@ public class ClientImplem implements Client{
     }
 
     private void register(){
-        System.out.print("Register to server...");
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Register to server...");
+        int choice = -1;
         try{
-            this.c = (Client) UnicastRemoteObject.exportObject(this,0);
-            this.setId(this.s.clientRegister(c));
+          while(!this.s.existingId(choice)){
+            System.out.println("Choose a room : ");
+            for(Room r: this.s.getRooms()){
+              System.out.println(r.getId()+ " : "+r.getNumberClients()+" clients connected.");
+            }
+            choice = sc.nextInt();
+          }
+          this.c = (Client) UnicastRemoteObject.exportObject(this,0);
+          this.setId(this.s.clientRegister(c, choice));
         }catch(Exception e){
             System.err.println("Error while registering client");
             System.err.println(e.getMessage());
@@ -49,7 +59,7 @@ public class ClientImplem implements Client{
 
     private void sendMessageToServer(String message) {
         try {
-            this.s.sendMsgToServ(new Message(this.pseudo, this.id, message));
+            this.s.sendMsgToServ(new Message(this.pseudo, this.id, message, this.s.getRoomOfClient(this)));
         } catch (RemoteException e) {
             System.err.println("Error sending message.");
         }

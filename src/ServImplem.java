@@ -6,10 +6,12 @@ import java.util.ArrayList;
 public class ServImplem implements Serv {
 	private int id;
 	private ArrayList<Client> clients; // HashMap ?
+	private ArrayList<Room> rooms;
 
 	public ServImplem() {
 		id = 0;
 		clients = new ArrayList<>();
+		rooms = new ArrayList<Room>();
 	}
 
 	/**
@@ -17,13 +19,38 @@ public class ServImplem implements Serv {
 	 * @param c : client reference
 	 * @return : client id strictly greater than 0
 	 */
-	public int clientRegister(Client c) throws RemoteException {
+	public int clientRegister(Client c, int roomId) throws RemoteException {
 		int cId;
 
 		id++; // min id = 1
 		cId = id;
 		clients.add(c);
+		for(Room r : this.getRooms()){
+			if(r.getId() == roomId)
+				r.joinRoom(c);
+				break;
+		}
 		return cId;
+	}
+
+	public ArrayList<Room> getRooms() throws RemoteException{
+		return this.rooms;
+	}
+
+	public boolean existingId(int id) throws RemoteException{
+		for(Room r : getRooms())
+			if(r.getId() == id)
+				return true;
+		return false;
+	}
+
+	public Room getRoomOfClient(Client c) throws RemoteException{
+		for(Room r : this.rooms){
+			if(r.isInTheRoom(c)){
+				return r;
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -35,6 +62,18 @@ public class ServImplem implements Serv {
 		System.out.println(m.sender() + " says " + m.text());
 		sendToClients(m);
 		writeToHistory(m);
+	}
+
+	public void sendMsgToRoom(Message m, Room room){
+		for(Client c : room.getClients()){
+			try{
+				if (c.getId() != m.senderId()) {
+					c.recvMsg(m);
+				}
+			}catch(RemoteException e){
+				System.out.println("[E]: Could not send to client");
+			}
+		}
 	}
 
 	/**
@@ -92,6 +131,8 @@ public class ServImplem implements Serv {
 	public void clientLeave(Client c) throws RemoteException {
 		System.out.println("Removing clients."); // TODO : Send disconnection msg to clients
 		clients.remove(c);
+		for(Room r : getRooms())
+			if(r.isInTheRoom(c))
+				r.leaveRoom(c);
 	}
 }
-

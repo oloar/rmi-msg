@@ -4,11 +4,20 @@ public class Message implements Serializable {
 	private String sender;
 	private int senderId;
 	private String text;
+	private Room room;
+
+	public Message(String sender, int senderId, String text, Room room) {
+		this.sender = sender;
+		this.senderId = senderId;
+		this.text = text;
+		this.room = room;
+	}
 
 	public Message(String sender, int senderId, String text) {
 		this.sender = sender;
 		this.senderId = senderId;
 		this.text = text;
+		this.room = room;
 	}
 
 	public String sender() {
