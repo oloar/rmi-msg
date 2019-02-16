@@ -32,6 +32,7 @@ public class ServImplem implements Serv {
 	 * @throws RemoteException
 	 */
 	public void sendMsgToServ(Message m) throws RemoteException {
+		System.out.println(m.sender() + " says " + m.text());
 		sendToClients(m);
 		writeToHistory(m);
 	}
