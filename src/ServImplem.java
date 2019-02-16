@@ -70,7 +70,7 @@ public class ServImplem implements Serv {
 				if (c.getId() != m.senderId()) {
 					c.recvMsg(m);
 				}
-			}catch(RemoteException e){
+			}catch(RemoteException e) {
 				System.err.println("[E]: Could not send to client.");
 				e.printStackTrace();
 			}

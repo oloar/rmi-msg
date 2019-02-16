@@ -19,13 +19,13 @@ public class ClientImplem implements Client{
 
     private void register(){
         Scanner sc = new Scanner(System.in);
-        System.out.println("Register to server...");
+        System.out.print(", registering to server...");
         int choice = -1;
         try{
           this.ref = (Client) UnicastRemoteObject.exportObject(this,0);
           this.setId(this.s.clientRegister(this.ref));
           this.connected = true;
-          System.out.println("Done.");
+          // System.out.println("Done.");
         }catch(Exception e){
             System.err.println("Error while registering client");
             System.err.println(e.getMessage());
@@ -40,8 +40,8 @@ public class ClientImplem implements Client{
         try{
             Registry registry = LocateRegistry.getRegistry(host);
             this.s = (Serv) registry.lookup("ChatService");
-            System.out.println("Done.");
             this.register();
+            System.out.println("All done.");
         }catch(Exception e){
             System.err.println("Error while connecting client");
             System.err.println(e.getMessage());
