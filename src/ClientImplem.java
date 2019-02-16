@@ -7,7 +7,7 @@ import java.util.Scanner;
 public class ClientImplem implements Client{
 
     private int id;
-    private Client c;
+    private Client ref;
     private String pseudo;
     private Serv s;
     private boolean connected;
@@ -22,8 +22,8 @@ public class ClientImplem implements Client{
         System.out.println("Register to server...");
         int choice = -1;
         try{
-          this.c = (Client) UnicastRemoteObject.exportObject(this,0);
-          this.setId(this.s.clientRegister(c, choice));
+          this.ref = (Client) UnicastRemoteObject.exportObject(this,0);
+          this.setId(this.s.clientRegister(this.ref));
           this.connected = true;
           System.out.println("Done.");
         }catch(Exception e){
@@ -52,7 +52,7 @@ public class ClientImplem implements Client{
 
     private void sendMessageToServer(String message) {
         try {
-            this.s.sendMsgToServ(new Message(this.pseudo, this.id, this.s.getRoomOfClient(c), message));
+            this.s.sendMsgToServ(new Message(this.pseudo, this.id, this.s.getRoomOfClient(ref), message));
         } catch (RemoteException e) {
             System.err.println("Error sending message.");
         }
@@ -109,7 +109,7 @@ public class ClientImplem implements Client{
         System.out.println("Leaving chat...");
         this.connected = false;
         try {
-            this.s.clientLeave(this.c);
+            this.s.clientLeave(this.ref);
         } catch (RemoteException e) {
             System.err.println("Could not disconnect from server.");
         }
