@@ -2,6 +2,7 @@ import java.io.*;
 import java.rmi.*;
 import java.rmi.registry.*;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class ServImplem implements Serv {
 	private int id;
@@ -23,7 +24,7 @@ public class ServImplem implements Serv {
 
 		id++; // min id = 1
 		cId = id;
-		rooms.get(0).joinRoom(c);
+		Objects.requireNonNull(getRoomById(0)).joinRoom(c);
 		sendMsgToServ(new Message("Server", 0, 0, c.getPseudo() + " has joined."));
 		return cId;
 	}
@@ -35,9 +36,9 @@ public class ServImplem implements Serv {
 	}
 
 	public void changeRoom(Client c, int newRoomId) throws RemoteException{
-		if(existingId(newRoomId) != false){
-			this.getRoomOfClient(c).leaveRoom(c);
-			getRoomById(newRoomId).joinRoom(c);
+		if(existingId(newRoomId)){
+			Objects.requireNonNull(getRoomById(getRoomOfClient(c))).leaveRoom(c);
+			Objects.requireNonNull(getRoomById(newRoomId)).joinRoom(c);
 		}
 	}
 
