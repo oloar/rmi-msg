@@ -47,37 +47,43 @@ public class ClientImplem implements Client{
 
     }
 
-    public void sendMessageToServer(String message){
-        if(message.charAt(0) != '/'){
-            Message m = new Message(this.pseudo, this.id, message);
-            try{
-                this.s.sendMsgToServ(m);
-            }catch(Exception e){
-                System.err.println("Error while sending message to server");
-                System.err.println(e.getMessage());
-                e.printStackTrace();
-            }
-        }else{
-            // TODO : gérer l'historique
-            switch(message){
-                case "/history":
-                    try {
-                        ArrayList<Message> h = this.s.getHistory();
-                        for (Message m : h) {
-                            System.out.println(m);
-                        }
-                    } catch(RemoteException e) {
-                        System.err.println("Error while fetching history.");
-                    }
-                    break;
-                case "/exit": case "/quit": case "/leave":
-                    this.leaveChat();
-                    break;
-                default:
-                    System.out.println("Unknown command");
-                    break;
-            }
+    private void sendMessageToServer(String message) {
+        try {
+            this.s.sendMsgToServ(new Message(this.pseudo, this.id, message));
+        } catch (RemoteException e) {
+            System.err.println("Error sending message.");
         }
+    }
+
+    private void fetchHistory() {
+        try {
+            ArrayList<Message> h = this.s.getHistory();
+            for (Message m : h) {
+                System.out.println(m);
+            }
+        } catch (RemoteException e) {
+            System.err.println("Error fetching history.");
+        }
+    }
+
+    public void parseInput(String message){
+        if (message.length() != 0)
+            if(message.charAt(0) != '/'){
+                sendMessageToServer(message);
+            } else {
+                // Commands
+                switch(message){
+                    case "/history":
+                        fetchHistory();
+                        break;
+                    case "/exit": case "/quit": case "/leave":
+                        this.leaveChat();
+                        break;
+                    default:
+                        System.out.println("Unknown command");
+                        break;
+                }
+            }
     }
 
     public void recvMsg(Message message) throws RemoteException{
