@@ -60,7 +60,7 @@ public class ClientImplem implements Client{
 
     private void fetchHistory() {
         try {
-            ArrayList<Message> h = this.s.getHistory();
+            ArrayList<Message> h = this.s.getHistory(this.ref);
             for (Message m : h) {
                 System.out.println(m);
             }

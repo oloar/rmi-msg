@@ -115,15 +115,21 @@ public class ServImplem implements Serv {
 	 * Construct an arraylist of messages from a file
 	 * @return The history in the form a an arraylist of message
 	 */
-	public ArrayList<Message> getHistory() throws RemoteException {
+	public ArrayList<Message> getHistory(Client c) throws RemoteException {
 		ArrayList<Message> history = new ArrayList<>();
 		BufferedReader br;
 		String line;
+		Message m;
+		int roomId = getRoomOfClient(c);
+
 		try {
 			br = new BufferedReader(new FileReader("history.txt"));
 			line = br.readLine();
 			while(line != null) {
-				history.add(Message.fromCSV(line));
+				m = Message.fromCSV(line);
+
+				if (m.roomId() == roomId)
+					history.add(m);
 				line = br.readLine();
 			}
 			br.close();
