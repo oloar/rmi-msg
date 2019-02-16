@@ -42,6 +42,7 @@ public class ClientImplem implements Client{
             this.s = (Serv) registry.lookup("ChatService");
             this.register();
             System.out.println("All done.");
+            this.printChatHelp();
         }catch(Exception e){
             System.err.println("Error while connecting client");
             System.err.println(e.getMessage());
@@ -106,11 +107,31 @@ public class ClientImplem implements Client{
                             System.err.println("Error changing room.");
                         }
                         break;
+                      case "/printrooms":
+                        try{
+                          System.out.println(this.s.printRooms());
+                        }catch(RemoteException e){
+                          System.out.println("Error printing room list");
+                        }
+                        break;
+                      case "/help": case "/list":
+                        this.printChatHelp();
+                        break;
                     default:
                         System.out.println("Unknown command");
                         break;
                 }
             }
+    }
+
+    private void printChatHelp(){
+      System.out.println("Commandes du chat :");
+      System.out.println("  /history print room history");
+      System.out.println("  /exit or /leave or /quit Leave chat");
+      System.out.println("  /create Create a new room");
+      System.out.println("  /printrooms Print the list of existing rooms");
+      System.out.println("  /join Join a room (Enter id after)");
+      System.out.println("  /help Print this message");
     }
 
     public void recvMsg(Message message) throws RemoteException{
