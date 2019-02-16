@@ -99,7 +99,7 @@ public class ServImplem implements Serv {
 	// HISTORY
 	/////////////////////////////////////////////////////////////////////////////////////
 	private void writeToHistory(Message m) {
-		if (m.roomId() != 0) { // Only log clients message
+		if (m.senderId() != 0) { // Only log clients message
 			try {
 				BufferedWriter br = new BufferedWriter(new FileWriter("history.txt", true));
 				br.write(m.toCSV());
