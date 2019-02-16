@@ -46,7 +46,7 @@ public class Message implements Serializable {
 	}
 
 	public String toString(){
-		return this.sender+": "+this.text;
+		return this.sender+"("+this.senderId+"): "+this.text;
 	}
 
 }
