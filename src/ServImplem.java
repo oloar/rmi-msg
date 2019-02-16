@@ -33,6 +33,31 @@ public class ServImplem implements Serv {
 		return cId;
 	}
 
+	public void printRooms() throws RemoteException{
+		for(Room r : this.rooms){
+			System.out.println(r.getId()+ " : "+r.getNumberClients()+" clients connected.");
+		}
+	}
+
+	public void changeRoom(Client c, int newRoomId) throws RemoteException{
+		if(existingId(newRoomId) != false){
+			this.getRoomOfClient(c).leaveRoom(c);
+			getRoomById(newRoomId).joinRoom(c);
+		}
+	}
+
+	private Room getRoomById(int id){
+		for(Room r : this.rooms){
+			if(r.getId() == id)
+				return r;
+		}
+		return null;
+	}
+
+	public void newRoom(){
+		this.rooms.add(new Room(this.rooms.size()+1));
+	}
+
 	public ArrayList<Room> getRooms() throws RemoteException{
 		return this.rooms;
 	}
