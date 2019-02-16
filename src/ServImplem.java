@@ -54,7 +54,7 @@ public class ServImplem implements Serv {
 	public void sendMsgToServ(Message m) throws RemoteException {
 		System.out.println(m.sender() + " says " + m.text() + " in " + m.roomId());
 
-		sendMsgToRoom(m, this.rooms.get(m.roomId()));
+		sendMsgToRoom(m, Objects.requireNonNull(getRoomById(m.roomId())));
 		writeToHistory(m);
 	}
 
