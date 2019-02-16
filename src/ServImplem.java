@@ -190,8 +190,10 @@ public class ServImplem implements Serv {
 	/**
 	 * Initialize a new room and add it to the list
 	 */
-	public void newRoom(){
-		this.rooms.add(new Room(this.rooms.size()+1));
+	public int newRoom() throws RemoteException {
+		int id = this.rooms.size();
+		this.rooms.add(new Room(id));
+		return id;
 	}
 
 	/**
