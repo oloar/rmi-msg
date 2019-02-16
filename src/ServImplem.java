@@ -149,10 +149,12 @@ public class ServImplem implements Serv {
 	/**
 	 * Diplay rooms information
 	 */
-	public void printRooms() throws RemoteException{
+	public String printRooms() throws RemoteException{
+		StringBuilder res = new StringBuilder();
 		for(Room r : this.rooms){
-			System.out.println(r.getId()+ " : "+r.getNumberClients()+" clients connected.");
+			res.append("Room ").append(r.getId()).append(" has ").append(r.getNumberClients()).append(" clients connected.\n");
 		}
+		return res.toString();
 	}
 
 	/**
