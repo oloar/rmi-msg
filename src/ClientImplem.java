@@ -82,6 +82,18 @@ public class ClientImplem implements Client{
                     case "/exit": case "/quit": case "/leave":
                         this.leaveChat();
                         break;
+                    case "/changeroom":
+                      try{
+                        System.out.println("Which room?");
+                        this.s.printRooms();
+                        Scanner sc = new Scanner(System.in);
+                        int id = sc.nextInt();
+                        if(this.s.existingId(id)){
+                          this.s.changeRoom(this, id);
+                        }
+                      }catch(RemoteException e){
+                        System.err.println("Error changing room.");
+                      }
                     default:
                         System.out.println("Unknown command");
                         break;
