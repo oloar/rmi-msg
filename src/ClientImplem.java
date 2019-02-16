@@ -2,11 +2,12 @@ import java.util.ArrayList;
 import java.rmi.*;
 import java.rmi.registry.*;
 import java.rmi.server.*;
+import java.util.Scanner;
 
 public class ClientImplem implements Client{
 
     private int id;
-    private Client c;
+    private Client ref;
     private String pseudo;
     private Serv s;
     private boolean connected;
@@ -17,17 +18,19 @@ public class ClientImplem implements Client{
     }
 
     private void register(){
-        System.out.print("Register to server...");
+        Scanner sc = new Scanner(System.in);
+        System.out.print(", registering to server...");
+        int choice = -1;
         try{
-            this.c = (Client) UnicastRemoteObject.exportObject(this,0);
-            this.setId(this.s.clientRegister(c));
+          this.ref = (Client) UnicastRemoteObject.exportObject(this,0);
+          this.setId(this.s.clientRegister(this.ref));
+          this.connected = true;
+          // System.out.println("Done.");
         }catch(Exception e){
             System.err.println("Error while registering client");
             System.err.println(e.getMessage());
             e.printStackTrace();
         }
-        this.connected = true;
-        System.out.println("Done.");
     }
 
     public void connect(String host){
@@ -37,19 +40,19 @@ public class ClientImplem implements Client{
         try{
             Registry registry = LocateRegistry.getRegistry(host);
             this.s = (Serv) registry.lookup("ChatService");
+            this.register();
+            System.out.println("All done.");
         }catch(Exception e){
             System.err.println("Error while connecting client");
             System.err.println(e.getMessage());
             e.printStackTrace();
         }
-        System.out.println("Done.");
-        this.register();
 
     }
 
     private void sendMessageToServer(String message) {
         try {
-            this.s.sendMsgToServ(new Message(this.pseudo, this.id, message));
+            this.s.sendMsgToServ(new Message(this.pseudo, this.id, this.s.getRoomOfClient(ref), message));
         } catch (RemoteException e) {
             System.err.println("Error sending message.");
         }
@@ -57,7 +60,7 @@ public class ClientImplem implements Client{
 
     private void fetchHistory() {
         try {
-            ArrayList<Message> h = this.s.getHistory();
+            ArrayList<Message> h = this.s.getHistory(this.ref);
             for (Message m : h) {
                 System.out.println(m);
             }
@@ -79,6 +82,30 @@ public class ClientImplem implements Client{
                     case "/exit": case "/quit": case "/leave":
                         this.leaveChat();
                         break;
+                    case "/create":
+                        try {
+                            int id = this.s.newRoom();
+                            System.out.println("Room created with id : " + id);
+                        } catch (RemoteException e) {
+                            System.err.println("Error creating the room.");
+                        }
+                        break;
+                    case "/join":
+                        try{
+                            int id;
+                            System.out.println("Which room?");
+                            System.out.print(this.s.printRooms());
+                            Scanner sc = new Scanner(System.in);
+                            id = Integer.parseInt(sc.nextLine()); // TODO : input validation
+                            if (this.s.existingId(id)) {
+                                this.s.changeRoom(this, id);
+                            } else {
+                                System.out.println("This room does not exist.");
+                            }
+                        }catch(RemoteException e){
+                            System.err.println("Error changing room.");
+                        }
+                        break;
                     default:
                         System.out.println("Unknown command");
                         break;
@@ -94,7 +121,7 @@ public class ClientImplem implements Client{
         System.out.println("Leaving chat...");
         this.connected = false;
         try {
-            this.s.clientLeave(this.c);
+            this.s.clientLeave(this.ref);
         } catch (RemoteException e) {
             System.err.println("Could not disconnect from server.");
         }
