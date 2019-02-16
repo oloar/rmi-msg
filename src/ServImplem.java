@@ -163,9 +163,14 @@ public class ServImplem implements Serv {
 	 * @param newRoomId : the room to switch to
 	 */
 	public void changeRoom(Client c, int newRoomId) throws RemoteException{
+		Room oldRoom, newRoom;
 		if(existingId(newRoomId)){
-			Objects.requireNonNull(getRoomById(getRoomOfClient(c))).leaveRoom(c);
-			Objects.requireNonNull(getRoomById(newRoomId)).joinRoom(c);
+			oldRoom = Objects.requireNonNull(getRoomById(getRoomOfClient(c)));
+			oldRoom.leaveRoom(c);
+			sendMsgToRoom(new Message("Server", 0, oldRoom.getId(), c.getPseudo() + " has left the channel."), oldRoom);
+			newRoom = Objects.requireNonNull(getRoomById(newRoomId));
+			newRoom.joinRoom(c);
+			sendMsgToRoom(new Message("Server", 0, newRoom.getId(), c.getPseudo() + " has join the channel."), newRoom);
 		}
 	}
 
