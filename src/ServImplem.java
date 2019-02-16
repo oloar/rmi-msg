@@ -87,5 +87,10 @@ public class ServImplem implements Serv {
 			System.err.println("Err: Could not write history to file.");
 		}
 	}
+
+	public void clientLeave(Client c) throws RemoteException {
+		System.out.println("Removing clients."); // TODO : Send disconnection msg to clients
+		clients.remove(c);
+	}
 }
 

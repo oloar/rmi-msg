@@ -7,5 +7,7 @@ public interface Serv extends Remote {
 	public void sendMsgToServ(Message m) throws RemoteException;
 
 	public ArrayList<Message> getHistory() throws RemoteException;
+
+	public void clientLeave(Client c) throws RemoteException;
 }
 

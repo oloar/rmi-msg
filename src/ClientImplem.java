@@ -6,6 +6,7 @@ import java.rmi.server.*;
 public class ClientImplem implements Client{
 
     private int id;
+    private Client c;
     private String pseudo;
     private Serv s;
     private boolean connected;
@@ -18,7 +19,7 @@ public class ClientImplem implements Client{
     private void register(){
         System.out.print("Register to server...");
         try{
-            Client c = (Client) UnicastRemoteObject.exportObject(this,0);
+            this.c = (Client) UnicastRemoteObject.exportObject(this,0);
             this.setId(this.s.clientRegister(c));
         }catch(Exception e){
             System.err.println("Error while registering client");
@@ -84,10 +85,14 @@ public class ClientImplem implements Client{
     }
 
     public void leaveChat(){
-        // TODO complete ?
         System.out.println("Leaving chat...");
         this.connected = false;
-        //this.s.clientLeave();
+        try {
+            this.s.clientLeave(this.c);
+        } catch (RemoteException e) {
+            System.err.println("Could not disconnect from server.");
+        }
+        System.exit(0);
     }
 
     public int getId() throws RemoteException {
