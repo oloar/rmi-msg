@@ -33,7 +33,7 @@ public class Message implements Serializable {
 	}
 
 	public String toCSV() {
-		return this.sender + "," + this.senderId + "," + this.text;
+		return this.sender + "," + this.senderId + "," + this.text + "\n";
 	}
 
 	public static Message fromCSV(String s) {

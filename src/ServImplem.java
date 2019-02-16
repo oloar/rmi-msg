@@ -123,6 +123,7 @@ public class ServImplem implements Serv {
 		try {
 			BufferedWriter br = new BufferedWriter(new FileWriter("history.txt", true));
 			br.write(m.toCSV());
+			br.close();
 		} catch (IOException e) {
 			System.err.println("Err: Could not write history to file.");
 		}
