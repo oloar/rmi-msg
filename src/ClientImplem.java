@@ -82,18 +82,30 @@ public class ClientImplem implements Client{
                     case "/exit": case "/quit": case "/leave":
                         this.leaveChat();
                         break;
-                    case "/changeroom":
-                      try{
-                        System.out.println("Which room?");
-                        this.s.printRooms();
-                        Scanner sc = new Scanner(System.in);
-                        int id = sc.nextInt();
-                        if(this.s.existingId(id)){
-                          this.s.changeRoom(this, id);
+                    case "/create":
+                        try {
+                            int id = this.s.newRoom();
+                            System.out.println("Room created with id : " + id);
+                        } catch (RemoteException e) {
+                            System.err.println("Error creating the room.");
                         }
-                      }catch(RemoteException e){
-                        System.err.println("Error changing room.");
-                      }
+                        break;
+                    case "/join":
+                        try{
+                            int id;
+                            System.out.println("Which room?");
+                            System.out.print(this.s.printRooms());
+                            Scanner sc = new Scanner(System.in);
+                            id = Integer.parseInt(sc.nextLine()); // TODO : input validation
+                            if (this.s.existingId(id)) {
+                                this.s.changeRoom(this, id);
+                            } else {
+                                System.out.println("This room does not exist.");
+                            }
+                        }catch(RemoteException e){
+                            System.err.println("Error changing room.");
+                        }
+                        break;
                     default:
                         System.out.println("Unknown command");
                         break;
