@@ -28,3 +28,4 @@ Nous avons implémenter les fonctionnalités suivantes :
 - Filtrage des messages de l'historique à la demande.
 - Envoie de message à tous les clients concernés (même salon).
 - Distinction de l'expediteur pour ne pas lui envoyer son propre message.
+- Commande de chat pour le client
