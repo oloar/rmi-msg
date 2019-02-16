@@ -5,12 +5,10 @@ import java.util.ArrayList;
 
 public class ServImplem implements Serv {
 	private int id;
-	private ArrayList<Client> clients; // HashMap ?
 	private ArrayList<Room> rooms;
 
 	public ServImplem() {
 		id = 0;
-		clients = new ArrayList<>();
 		rooms = new ArrayList<Room>();
 		rooms.add(new Room(0));
 	}
@@ -25,13 +23,8 @@ public class ServImplem implements Serv {
 
 		id++; // min id = 1
 		cId = id;
-		clients.add(c);
 		rooms.get(0).joinRoom(c);
-//		for(Room r : this.getRooms()){
-//			if(r.getId() == roomId)
-//				r.joinRoom(c);
-//				break;
-//		}
+		sendMsgToServ(new Message("Server", 0, 0, c.getPseudo() + " has joined."));
 		return cId;
 	}
 
@@ -61,8 +54,9 @@ public class ServImplem implements Serv {
 	 * @throws RemoteException
 	 */
 	public void sendMsgToServ(Message m) throws RemoteException {
-		System.out.println(m.sender() + " says " + m.text());
-		sendToClients(m);
+		System.out.println(m.sender() + " says " + m.text() + " in " + m.roomId());
+
+		sendMsgToRoom(m, this.rooms.get(m.roomId()));
 		writeToHistory(m);
 	}
 
@@ -73,7 +67,8 @@ public class ServImplem implements Serv {
 					c.recvMsg(m);
 				}
 			}catch(RemoteException e){
-				System.out.println("[E]: Could not send to client");
+				System.err.println("[E]: Could not send to client.");
+				e.printStackTrace();
 			}
 		}
 	}
@@ -82,17 +77,18 @@ public class ServImplem implements Serv {
 	 * Send message to all connected clients
 	 * @param m : message to send
 	 */
-	private void sendToClients(Message m) {
-		for (Client c : clients) {
-			try {
-			if (c.getId() != m.senderId()) {
-				c.recvMsg(m);
-			}
-			} catch (RemoteException e) {
-				System.err.println("[E]: Could not send to client");
-			}
+	private void broadcast(Message m) {
+		for (Room r : rooms){
+			for (Client c : r.getClients())
+				try {
+					if (c.getId() != m.senderId()) {
+						c.recvMsg(m);
+					}
+				} catch (RemoteException e) {
+					System.err.println("[E]: Could not send to client");
+					e.printStackTrace();
+				}
 		}
-
 	}
 
 	/**
@@ -122,18 +118,20 @@ public class ServImplem implements Serv {
 	}
 
 	private void writeToHistory(Message m) {
-		try {
-			BufferedWriter br = new BufferedWriter(new FileWriter("history.txt", true));
-			br.write(m.toCSV());
-			br.close();
-		} catch (IOException e) {
-			System.err.println("Err: Could not write history to file.");
+		if (m.roomId() != 0) { // Only log clients message
+			try {
+				BufferedWriter br = new BufferedWriter(new FileWriter("history.txt", true));
+				br.write(m.toCSV());
+				br.close();
+			} catch (IOException e) {
+				System.err.println("Err: Could not write history to file.");
+				System.err.println(e.getMessage());
+			}
 		}
 	}
 
 	public void clientLeave(Client c) throws RemoteException {
-		System.out.println("Removing clients."); // TODO : Send disconnection msg to clients
-		clients.remove(c);
+		System.out.println("Removing clients.");
 		for(Room r : getRooms())
 			if(r.isInTheRoom(c))
 				r.leaveRoom(c);

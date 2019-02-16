@@ -32,6 +32,10 @@ public class Message implements Serializable {
 		return this.senderId;
 	}
 
+	public int roomId() {
+		return this.roomId;
+	}
+
 	public String toCSV() {
 		return this.sender + "," + this.senderId + "," + this.roomId + "," + this.text + "\n";
 	}

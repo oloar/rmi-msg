@@ -22,22 +22,15 @@ public class ClientImplem implements Client{
         System.out.println("Register to server...");
         int choice = -1;
         try{
-          while(!this.s.existingId(choice)){
-            System.out.println("Choose a room : ");
-            for(Room r: this.s.getRooms()){
-              System.out.println(r.getId()+ " : "+r.getNumberClients()+" clients connected.");
-            }
-            choice = sc.nextInt();
-          }
           this.c = (Client) UnicastRemoteObject.exportObject(this,0);
           this.setId(this.s.clientRegister(c, choice));
+          this.connected = true;
+          System.out.println("Done.");
         }catch(Exception e){
             System.err.println("Error while registering client");
             System.err.println(e.getMessage());
             e.printStackTrace();
         }
-        this.connected = true;
-        System.out.println("Done.");
     }
 
     public void connect(String host){
@@ -47,19 +40,19 @@ public class ClientImplem implements Client{
         try{
             Registry registry = LocateRegistry.getRegistry(host);
             this.s = (Serv) registry.lookup("ChatService");
+            System.out.println("Done.");
+            this.register();
         }catch(Exception e){
             System.err.println("Error while connecting client");
             System.err.println(e.getMessage());
             e.printStackTrace();
         }
-        System.out.println("Done.");
-        this.register();
 
     }
 
     private void sendMessageToServer(String message) {
         try {
-            this.s.sendMsgToServ(new Message(this.pseudo, this.id, this.s.getRoomOfClient(this), message));
+            this.s.sendMsgToServ(new Message(this.pseudo, this.id, this.s.getRoomOfClient(c), message));
         } catch (RemoteException e) {
             System.err.println("Error sending message.");
         }
