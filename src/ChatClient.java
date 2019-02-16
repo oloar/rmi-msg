@@ -3,6 +3,8 @@ import java.util.Scanner;
 public class ChatClient{
 
 	public static void main(String [] args) {
+		String entry;
+		String pseudo;
 
 		try {
 			if (args.length < 1) {
@@ -10,15 +12,19 @@ public class ChatClient{
 				return;}
 
 			String host = args[0];
+			Scanner sc = new Scanner(System.in);
 
-            ClientImplem client = new ClientImplem("Tester");
-            client.connect(host);
 
-            Scanner sc = new Scanner(System.in);
+			System.out.println("Type in your name :");
+			pseudo = sc.nextLine();
+			// TODO : input validation
+			ClientImplem client = new ClientImplem(pseudo);
+			client.connect(host);
 
-            while(client.isConnected()){
-                String entry = sc.nextLine();
-                client.sendMessageToServer(entry);
+
+			while(client.isConnected()){
+                entry = sc.nextLine();
+                client.parseInput(entry);
             }
 
 
