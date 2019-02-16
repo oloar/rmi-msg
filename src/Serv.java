@@ -6,7 +6,7 @@ public interface Serv extends Remote {
 
 	public void sendMsgToServ(Message m) throws RemoteException;
 
-	public Room getRoomOfClient(Client c) throws RemoteException;
+	public int getRoomOfClient(Client c) throws RemoteException;
 	public ArrayList<Room> getRooms() throws RemoteException;
 	public boolean existingId(int id) throws RemoteException;
 

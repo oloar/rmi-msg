@@ -59,7 +59,7 @@ public class ClientImplem implements Client{
 
     private void sendMessageToServer(String message) {
         try {
-            this.s.sendMsgToServ(new Message(this.pseudo, this.id, message, this.s.getRoomOfClient(this)));
+            this.s.sendMsgToServ(new Message(this.pseudo, this.id, this.s.getRoomOfClient(this), message));
         } catch (RemoteException e) {
             System.err.println("Error sending message.");
         }

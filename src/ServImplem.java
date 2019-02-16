@@ -12,6 +12,7 @@ public class ServImplem implements Serv {
 		id = 0;
 		clients = new ArrayList<>();
 		rooms = new ArrayList<Room>();
+		rooms.add(new Room(0));
 	}
 
 	/**
@@ -25,11 +26,12 @@ public class ServImplem implements Serv {
 		id++; // min id = 1
 		cId = id;
 		clients.add(c);
-		for(Room r : this.getRooms()){
-			if(r.getId() == roomId)
-				r.joinRoom(c);
-				break;
-		}
+		rooms.get(0).joinRoom(c);
+//		for(Room r : this.getRooms()){
+//			if(r.getId() == roomId)
+//				r.joinRoom(c);
+//				break;
+//		}
 		return cId;
 	}
 
@@ -44,13 +46,13 @@ public class ServImplem implements Serv {
 		return false;
 	}
 
-	public Room getRoomOfClient(Client c) throws RemoteException{
+	public int getRoomOfClient(Client c) throws RemoteException{
 		for(Room r : this.rooms){
 			if(r.isInTheRoom(c)){
-				return r;
+				return r.getId();
 			}
 		}
-		return null;
+		return -1;
 	}
 
 	/**

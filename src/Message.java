@@ -3,21 +3,21 @@ import java.io.Serializable;
 public class Message implements Serializable {
 	private String sender;
 	private int senderId;
+	private int roomId;
 	private String text;
-	private Room room;
 
-	public Message(String sender, int senderId, String text, Room room) {
+	public Message(String sender, int senderId, int roomId, String text) {
 		this.sender = sender;
 		this.senderId = senderId;
 		this.text = text;
-		this.room = room;
+		this.roomId = roomId;
 	}
 
 	public Message(String sender, int senderId, String text) {
 		this.sender = sender;
 		this.senderId = senderId;
 		this.text = text;
-		this.room = room;
+		this.roomId = 0;
 	}
 
 	public String sender() {
@@ -33,12 +33,12 @@ public class Message implements Serializable {
 	}
 
 	public String toCSV() {
-		return this.sender + "," + this.senderId + "," + this.text + "\n";
+		return this.sender + "," + this.senderId + "," + this.roomId + "," + this.text + "\n";
 	}
 
 	public static Message fromCSV(String s) {
 		String[] splitted = s.split(",");
-		return new Message(splitted[0], Integer.parseInt(splitted[1]), splitted[2]);
+		return new Message(splitted[0], Integer.parseInt(splitted[1]), Integer.parseInt(splitted[2]), splitted[3]);
 	}
 	public String toString(){
 		return this.sender+": "+this.text;
